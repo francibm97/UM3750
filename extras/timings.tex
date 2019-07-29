@@ -23,10 +23,18 @@
 	
 	% Vertical dotted line
 	\draw[dotted] (7.92, 7.5) -- ++(0,-2.5);
+	\draw[dotted] (7.26, 7.5) -- ++(0,-2.5);
 	
 	% Curly braces
-	\draw[decoration={brace,amplitude=6pt,mirror},decorate] (0.05,5.5) -- node[below=8pt] {$12 \cdot T_s$} ++(7.82, 0);
+	\draw[decoration={brace,amplitude=6pt,mirror},decorate] (0.05,5.5) -- node[below=8pt] {$11 \cdot T_s$} ++(7.16, 0);
+	\draw[decoration={brace,amplitude=6pt,mirror},decorate] (7.31,5.5) -- node[below=8pt] {$T_s$} ++(.56, 0);
 	\draw[decoration={brace,amplitude=6pt,mirror},decorate] (7.97,5.5) -- node[below=8pt] {$12 \cdot T_s$} ++(7.82, 0);
+	
+	\draw[decoration={brace,amplitude=6pt},decorate] (0.05,7.5) -- node[above=8pt] {Silence} ++(7.16, 0);
+	\draw[decoration={brace,amplitude=6pt},decorate] (7.31,7.5) -- node[above=8pt] {Sync} ++(.56, 0);
+	\draw[decoration={brace,amplitude=6pt},decorate] (7.97,7.5) -- node[above=8pt] {Data} ++(7.82, 0);
+	
+	
 	
 
 \end{circuitikz}
