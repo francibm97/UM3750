@@ -65,6 +65,12 @@ void UM3750Class::playCode(bool code[], int playTimes) {
 	UM3750Class::play_pin = this->pin;
 	
 	timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
+	// As the ESP8266 run at 8MHz and we set a division by 16 on the counter,
+	// it means that the counter ticks every 0.2 microseconds.
+	// So we first multiply symbolDurationTime by five to get the number of
+	// ticks after which a single symbol duration time has passed.
+	// Then we divide that number by 3 as we need to update the logical value
+	// 3 times during each symbol duration time.
 	timer1_write((uint32_t) ((this->symbolDurationTime * 5.0) / 3.0));
 }
 
