@@ -50,7 +50,7 @@ void UM3750Class::playCode(bool code[], int playTimes) {
 	UM3750Class::played_current_times = 0;
 	UM3750Class::played_total_times = playTimes;
 		
-	for(i = 0; i < TRANSITIONS_PER_SYMBOL * SYMBOLS * 2; i++) {
+	for(i = 0; i < TOTAL_TRANSITIONS; i++) {
 		UM3750Class:tick_vals[i] = 0;  
 	}
 	
@@ -86,7 +86,7 @@ void ICACHE_RAM_ATTR UM3750Class::__digitalWrite(uint8_t pin, uint8_t val) {
 void ICACHE_RAM_ATTR UM3750Class::UM3750ISR(void) {
 	UM3750Class::__digitalWrite(UM3750Class::play_pin, UM3750Class::tick_vals[UM3750Class::tick_i]);
 	
-	if(++UM3750Class::tick_i == 72){
+	if(++UM3750Class::tick_i == TOTAL_TRANSITIONS){
 		UM3750Class::tick_i = 0;
 		UM3750Class::played_current_times++;  
 	}

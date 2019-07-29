@@ -57,7 +57,7 @@ private:
 	 * For simplicity an array is used to store these values in order to keep 
 	 * the ISR short and simple.
 	 */	
-	static uint8_t tick_vals[TRANSITIONS_PER_SYMBOL * SYMBOLS * 2];
+	static uint8_t tick_vals[TOTAL_TRANSITIONS];
 	static uint8_t tick_i;
 	
 	/**
