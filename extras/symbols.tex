@@ -1,0 +1,21 @@
+\documentclass{standalone}
+\usepackage{circuitikz}
+\usetikzlibrary{angles,arrows.meta,calc,decorations.markings,decorations.pathreplacing,quotes}
+\begin{document}
+\begin{circuitikz}
+	% Symbols
+	\draw (0,4) -| ++(4,1.5) -| ++(2,-1.5);
+	\draw (0,2) -| ++(2,1.5) -| ++(4,-1.5);
+	
+	% Vertical grid
+	\draw[dotted] (2,5.5) -- ++(0,-4) (4,5.5) -- ++(0,-4);
+	
+	% Braces
+	\draw[decoration={brace,amplitude=6pt},decorate] (6.5,5.5) -- node[right=8pt] {$0$} ++(0, -1.5);
+	\draw[decoration={brace,amplitude=5pt},decorate] (6.5,3.5) -- node[right=8pt] {$1$} ++(0, -1.5);
+	\draw[decoration={brace,amplitude=5pt,mirror},decorate] (0.05,1.5) -- node[below=8pt] {$\frac{1}{3}T_S$} ++(1.9, 0);
+	\draw[decoration={brace,amplitude=5pt,mirror},decorate] (2.05,1.5) -- node[below=8pt] {$\frac{1}{3}T_S$} ++(1.9, 0);
+	\draw[decoration={brace,amplitude=5pt,mirror},decorate] (4.05,1.5) -- node[below=8pt] {$\frac{1}{3}T_S$} ++(1.9, 0);
+	\draw[decoration={brace,amplitude=10pt,mirror},decorate] (0,.5) -- node[below=12pt] {$T_S$} ++(6, 0);
+\end{circuitikz}
+\end{document}

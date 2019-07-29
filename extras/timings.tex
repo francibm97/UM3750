@@ -1,0 +1,33 @@
+\documentclass{standalone}
+\usepackage{circuitikz}
+\usetikzlibrary{angles,arrows.meta,calc,decorations.markings,decorations.pathreplacing,quotes}
+
+\tikzset{
+	pics/symbol/.style args={#1 #2}{
+		code={
+			\draw[dotted] (#1, #2) -| ++(.22,1) -| ++(.44,-1);
+			\draw (#1, #2) -| ++(.44,1) -| ++(.22,-1);
+		}
+	}
+}
+
+\begin{document}
+\begin{circuitikz}
+	% Silence
+	\draw (0,6) -| ++(7.7,1) -| ++(.22,-1);
+	
+	% Data
+	\foreach \i in {0,...,11} {
+		\pic {symbol=7.92+\i*.66 6};
+	}
+	
+	% Vertical dotted line
+	\draw[dotted] (7.92, 7.5) -- ++(0,-2.5);
+	
+	% Curly braces
+	\draw[decoration={brace,amplitude=6pt,mirror},decorate] (0.05,5.5) -- node[below=8pt] {$12 \cdot T_s$} ++(7.82, 0);
+	\draw[decoration={brace,amplitude=6pt,mirror},decorate] (7.97,5.5) -- node[below=8pt] {$12 \cdot T_s$} ++(7.82, 0);
+	
+
+\end{circuitikz}
+\end{document}
