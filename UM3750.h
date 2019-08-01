@@ -18,26 +18,48 @@
 // works at a frequency of 100 Khz
 #define DEFAULT_SYMBOL_DURATION_TIME 960 //us
 // Should be fine for most receivers
-#define DEFAULT_PLAY_TIMES 48
+#define DEFAULT_TRANSMIT_TIMES 48
 
-class UM3750Class {
+class UM3750 {
 public:
 
-	UM3750Class(void);
-	
-	void enableTransmit(int pin, float symbolDurationTime);
-	void enableTransmit(int pin);
-	
+	typedef struct Code {
+		uint16_t value;
+		float symbolDurationTime = DEFAULT_SYMBOL_DURATION_TIME;
+		
+		Code(int value) {
+			this->value = value;
+		}
+		
+		Code(int value, float symbolDurationTime) {
+			this->value = value;
+			this->symbolDurationTime = symbolDurationTime;
+		}
+	} Code;
+
+	UM3750(void);
+		
+	void enableTransmit(uint8_t pin);	
 	void disableTransmit(void);
 	
-	void playCode(bool code[], int playTimes);
-	void playCode(bool code[]);
+	//void enableReceive(uint8_t pin);
+	//void disableReceive(void);
 	
+	void transmitCode(Code code, uint32_t times);
+	void transmitCode(Code code);
+	static bool isTransmitting();
+	
+	//UM3750Code receiveCode(uint8_t minValids);
+	//UM3750Code receiveCode();
+			
 private:
 	
-	int pin;
-	float symbolDurationTime;
+	int16_t transmitPin, receivePin;
 	
+	////////////////////////////////
+	// STATIC TRANSMIT VARIABLES //
+	//////////////////////////////
+	static uint8_t timer1_init_done;
 	/**
 	 * Each symbol can be decomposed into three steps of same duration.
 	 * The first is always low, the second is either low or high whether it is 
@@ -57,28 +79,25 @@ private:
 	 * For simplicity an array is used to store these values in order to keep 
 	 * the ISR short and simple.
 	 */	
-	static uint8_t tick_vals[TOTAL_TRANSITIONS];
-	static uint8_t tick_i;
+	static uint8_t transmit_vals[TOTAL_TRANSITIONS];
+	static uint8_t transmit_i;
 	
 	/**
 	 * Store how many times the code has been played
 	 */
-	static int played_current_times;
-	static int played_total_times;
+	static uint32_t transmit_current_times;
+	static uint32_t transmit_total_times;
 	
 	/**
-	 * Digital pin address accessed in the ISR
+	 * Digital pin address accessed in the ISRs
 	 */
-	static int play_pin;
-	
-	static void UM3750ISR(void);
+	static uint8_t transmit_pin;
 	
 	static void __digitalWrite(uint8_t pin, uint8_t val);
 	
+	static void UM3750ISRtransmit(void);
+	//static void UM3750ISRreceive(void);
+		
 };
-
-#if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_UM3750)
-	extern UM3750Class UM3750;
-#endif
 
 #endif
