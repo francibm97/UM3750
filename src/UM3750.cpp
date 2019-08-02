@@ -72,8 +72,18 @@ void UM3750::enableReceive(uint8_t pin, uint8_t minFoundTimes) {
 	attachInterrupt(digitalPinToInterrupt(this->receivePin), ISR_RECEIVE_ASSIGN(i), CHANGE);
 		
 }
+
 void UM3750::enableReceive(uint8_t pin) {
 	this->enableReceive(pin, DEFAULT_MIN_RECEIVE_FOUND_TIMES);
+}
+
+void UM3750:disableReceive() {
+	if(this->receivePin > 0) {
+		detachInterrupt(digitalPinToInterrupt(this->receivePin));
+		this->receivePin = -1;
+		this->receiveIndex = -1;
+	}
+
 }
 
 void UM3750::transmitCode(Code code, uint32_t times) {	

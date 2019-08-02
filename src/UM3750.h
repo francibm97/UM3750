@@ -61,7 +61,7 @@ public:
 	
 	void enableReceive(uint8_t pin, uint8_t minFoundTimes);
 	void enableReceive(uint8_t pin);
-	//void disableReceive(void);
+	void disableReceive(void);
 	
 	void transmitCode(Code code, uint32_t times);
 	void transmitCode(Code code);
