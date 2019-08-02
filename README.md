@@ -30,7 +30,7 @@ the `UM3750:Code` struct.
     
     void loop() {
         int code = 1337;
-		float symbolDurationTime = 741.6;
+        float symbolDurationTime = 741.6;
         
         myUM3750.transmitCode(UM3750::Code(code, symbolDurationTime));
         delay(500);
@@ -39,7 +39,7 @@ the `UM3750:Code` struct.
         while(um3750.isTransmitting()) yield(); // Wait until the transmission ends
         
         myUM3750.transmitCode(UM3750::Code(code), 4); // Transmit the code 4 times (Default: 48)
-		delay(500);
+        delay(500);
     }
     
 Please note that the symbol duration time should be a multiple of 0.2 
