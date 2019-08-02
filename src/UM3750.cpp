@@ -1,6 +1,7 @@
 /**
- * UM3750.cpp - An arduino library to emulate the UM3750 encoder and transmit 
- *              fixed 12 bit codes over the 315/433MHz bandwidth
+ * UM3750.cpp - An arduino library to emulate the UM3750 encoder/decoder and 
+ *              transmit or receive fixed 12 bit codes over the 315/433MHz 
+ *              bandwidth.
  * Created by Francesco Bianco Morghet in July 2019
  * Distributed under the MIT License
  */
