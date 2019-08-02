@@ -77,7 +77,7 @@ void UM3750::enableReceive(uint8_t pin) {
 	this->enableReceive(pin, DEFAULT_MIN_RECEIVE_FOUND_TIMES);
 }
 
-void UM3750:disableReceive() {
+void UM3750::disableReceive() {
 	if(this->receivePin > 0) {
 		detachInterrupt(digitalPinToInterrupt(this->receivePin));
 		this->receivePin = -1;
