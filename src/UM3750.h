@@ -20,6 +20,23 @@
 // Should be fine for most receivers
 #define DEFAULT_TRANSMIT_TIMES 48
 
+#define DEFAULT_MIN_RECEIVE_FOUND_TIMES 4
+
+// Set maximum interrupt handlers. If changed, you need to change
+// ISR_RECEIVE_DEFS_H, ISR_RECEIVE_DEFS_CPP and ISR_RECEIVE_ASSIGN to.
+#define MAX_RECEIVE_DEVICES 3
+
+// Receive macro definitions
+#define _UM3750ISRreceiveh(n) static void UM3750ISRreceive_##n(void)
+#define _UM3750ISRreceivec(n) void ICACHE_RAM_ATTR UM3750::UM3750ISRreceive_##n(void) { current_receive_index = n; UM3750::UM3750ISRreceive(); }
+
+#define ISR_RECEIVE_DEFS_H _UM3750ISRreceiveh(0); _UM3750ISRreceiveh(1); _UM3750ISRreceiveh(2);
+#define ISR_RECEIVE_DEFS_CPP _UM3750ISRreceivec(0); _UM3750ISRreceivec(1); _UM3750ISRreceivec(2);
+#define ISR_RECEIVE_ASSIGN(n) (n) == 0 ? UM3750::UM3750ISRreceive_0 : (n) == 1 ? UM3750::UM3750ISRreceive_1 : (n) == 2 ? UM3750::UM3750ISRreceive_2 : 0
+
+// shorthan
+#define ISRGVAR(v) UM3750::receive[current_receive_index].v
+
 class UM3750 {
 public:
 
@@ -42,20 +59,23 @@ public:
 	void enableTransmit(uint8_t pin);	
 	void disableTransmit(void);
 	
-	//void enableReceive(uint8_t pin);
+	void enableReceive(uint8_t pin, uint8_t minFoundTimes);
+	void enableReceive(uint8_t pin);
 	//void disableReceive(void);
 	
 	void transmitCode(Code code, uint32_t times);
 	void transmitCode(Code code);
 	static bool isTransmitting();
 	
-	//UM3750Code receiveCode(uint8_t minValids);
-	//UM3750Code receiveCode();
+	bool isReceivedCodeAvailable();
+	Code getReceivedCode();
+	void resetReceivedCode();
 			
 private:
 	
 	int16_t transmitPin, receivePin;
 	
+	// ISR receive index
 	uint8_t receiveIndex;
 	
 	////////////////////////////////
@@ -99,11 +119,36 @@ private:
 	};
 	
 	static transmit_s transmit;
+	
+	///////////////////////////////
+	// STATIC RECEIVE VARIABLES //
+	/////////////////////////////
+	static uint8_t current_receive_index;
+	static uint8_t receive_activated[MAX_RECEIVE_DEVICES];
+	
+	struct receive_s {
+		uint8_t min_found_times;
+
+		uint32_t durations[32];
+		uint8_t durations_i;
+
+		unsigned long last_time;
+
+		uint16_t found_code;
+		uint32_t avg_ts;
+		volatile uint8_t found_code_times;
 		
+		uint8_t pin;
+	};
+	
+	static receive_s receive[MAX_RECEIVE_DEVICES];
+	
 	static void __digitalWrite(uint8_t pin, uint8_t val);
 	
 	static void UM3750ISRtransmit(void);
-	//static void UM3750ISRreceive(void);
+	
+	static void UM3750ISRreceive(void);
+	ISR_RECEIVE_DEFS_H
 		
 };
 
