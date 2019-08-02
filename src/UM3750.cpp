@@ -227,7 +227,7 @@ void ICACHE_RAM_ATTR UM3750::UM3750ISRreceive(void) {
         else {
           ISRGVAR(found_code_times)++;
           ISRGVAR(avg_ts) += current_avg_ts / 12;
-          ISRGVAR(avg_ts) >>= 1; // Not really an average but close enough
+          ISRGVAR(avg_ts) /= 2; // Not really an average but close enough
         }
       }
     }

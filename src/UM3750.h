@@ -135,7 +135,7 @@ private:
 		unsigned long last_time;
 
 		uint16_t found_code;
-		uint32_t avg_ts;
+		float avg_ts;
 		volatile uint8_t found_code_times;
 		
 		uint8_t pin;
