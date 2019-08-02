@@ -221,12 +221,12 @@ void ICACHE_RAM_ATTR UM3750::UM3750ISRreceive(void) {
         // but hasn't been read by the client yet
         if(current_found_code != ISRGVAR(found_code)) {
           ISRGVAR(found_code) = current_found_code;
-          ISRGVAR(avg_ts) = current_avg_ts / 12;
+          ISRGVAR(avg_ts) = current_avg_ts / 12.0;
           ISRGVAR(found_code_times) = 1;
         }
         else {
           ISRGVAR(found_code_times)++;
-          ISRGVAR(avg_ts) += current_avg_ts / 12;
+          ISRGVAR(avg_ts) += current_avg_ts / 12.0;
           ISRGVAR(avg_ts) /= 2; // Not really an average but close enough
         }
       }
