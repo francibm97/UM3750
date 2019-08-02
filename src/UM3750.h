@@ -23,7 +23,7 @@
 class UM3750 {
 public:
 
-	typedef struct Code {
+	struct Code {
 		uint16_t value;
 		float symbolDurationTime = DEFAULT_SYMBOL_DURATION_TIME;
 		
@@ -35,7 +35,7 @@ public:
 			this->value = value;
 			this->symbolDurationTime = symbolDurationTime;
 		}
-	} Code;
+	};
 
 	UM3750(void);
 		
@@ -56,43 +56,50 @@ private:
 	
 	int16_t transmitPin, receivePin;
 	
+	uint8_t receiveIndex;
+	
 	////////////////////////////////
 	// STATIC TRANSMIT VARIABLES //
 	//////////////////////////////
-	static uint8_t timer1_init_done;
-	/**
-	 * Each symbol can be decomposed into three steps of same duration.
-	 * The first is always low, the second is either low or high whether it is 
-	 * 0 or 1 being transmitted, and the third is always high.
-	 *      ________                ____
-	 *     |                       |
-	 * ____|               ________|
-	 *     One                 Zero
-	 *
-	 * Before transmitting the 12 symbols of data, there is a sync symbol, which
-	 * is equal to a zero symbol.
-	 * So in total a single transmission consists of
-	 * - 1 sync symbol
-	 * - 12 data symbols
-	 * - 11 symbols time equivalent of silence
-	 *
-	 * For simplicity an array is used to store these values in order to keep 
-	 * the ISR short and simple.
-	 */	
-	static uint8_t transmit_vals[TOTAL_TRANSITIONS];
-	static uint8_t transmit_i;
+	struct transmit_s {
+		uint8_t timer1_init_done;
+		
+		/**
+		 * Each symbol can be decomposed into three steps of same duration.
+		 * The first is always low, the second is either low or high whether it  
+		 * is 0 or 1 being transmitted, and the third is always high.
+		 *      ________                ____
+		 *     |                       |
+		 * ____|               ________|
+		 *     One                 Zero
+		 *
+		 * Before transmitting the 12 symbols of data, there is a sync symbol,
+		 * which is equal to a zero symbol.
+		 * So in total a single transmission consists of
+		 * - 1 sync symbol
+		 * - 12 data symbols
+		 * - 11 symbols time equivalent of silence
+		 *
+		 * For simplicity an array is used to store these values in order to keep 
+		 * the ISR short and simple.
+		 */	
+		uint8_t vals[TOTAL_TRANSITIONS];
+		uint8_t i;
+		
+		/**
+		 * Store how many times the code has been played
+		 */
+		uint32_t current_times;
+		uint32_t total_times;
+		
+		/**
+		 * Digital pin address accessed in the ISRs
+		 */
+		uint8_t pin;
+	};
 	
-	/**
-	 * Store how many times the code has been played
-	 */
-	static uint32_t transmit_current_times;
-	static uint32_t transmit_total_times;
-	
-	/**
-	 * Digital pin address accessed in the ISRs
-	 */
-	static uint8_t transmit_pin;
-	
+	static transmit_s transmit;
+		
 	static void __digitalWrite(uint8_t pin, uint8_t val);
 	
 	static void UM3750ISRtransmit(void);

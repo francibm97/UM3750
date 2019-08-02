@@ -7,16 +7,7 @@
 
 #include "UM3750.h"
 
-uint8_t UM3750::timer1_init_done = 0;
-
-uint8_t UM3750::transmit_vals[TRANSITIONS_PER_SYMBOL * SYMBOLS * 2];
-uint8_t UM3750::transmit_i;
-
-uint32_t UM3750::transmit_current_times;
-uint32_t UM3750::transmit_total_times;
-
-uint8_t UM3750::transmit_pin;
-	
+UM3750::transmit_s UM3750::transmit = {0};
 
 UM3750::UM3750(void) {
 	this->transmitPin = -1;
@@ -27,22 +18,22 @@ void UM3750::enableTransmit(uint8_t pin) {
 		
 	pinMode(this->transmitPin, OUTPUT);
 	digitalWrite(this->transmitPin, LOW);
-	if(!UM3750::timer1_init_done) {
+	if(!UM3750::transmit.timer1_init_done) {
 		timer1_isr_init();
 		timer1_attachInterrupt(UM3750ISRtransmit);
-		UM3750::timer1_init_done++;
+		UM3750::transmit.timer1_init_done++;
 	}
 }
 
 void UM3750::disableTransmit(void) {
-	if(UM3750::transmit_pin >= 0) {
-		UM3750::timer1_init_done--;
+	if(UM3750::transmit.pin >= 0) {
+		UM3750::transmit.timer1_init_done--;
 		// before detaching the interrupt, be sure that every other UM3750
 		// object is enabled to transmit (ie has called enableTransmit but
 		// not disableTransmit yet)
-		if(!UM3750::timer1_init_done) {
+		if(!UM3750::transmit.timer1_init_done) {
 			timer1_detachInterrupt();
-			UM3750::transmit_total_times = 0;
+			UM3750::transmit.total_times = 0;
 		}
 	}
 }
@@ -56,22 +47,22 @@ void UM3750::transmitCode(Code code, uint32_t times) {
 	while(UM3750::isTransmitting())
 		yield();
 	
-	UM3750::transmit_pin = this->transmitPin;
+	UM3750::transmit.pin = this->transmitPin;
 	
-	UM3750::transmit_i = 0;
-	UM3750::transmit_current_times = 0;
-	UM3750::transmit_total_times = times;
+	UM3750::transmit.i = 0;
+	UM3750::transmit.current_times = 0;
+	UM3750::transmit.total_times = times;
 		
 	for(i = 0; i < TOTAL_TRANSITIONS; i++) {
-		UM3750:transmit_vals[i] = 0;  
+		UM3750:transmit.vals[i] = 0;  
 	}
 	
-	UM3750::transmit_vals[2] = 1; // sync pulse
+	UM3750::transmit.vals[2] = 1; // sync pulse
 	
 	for(i = 0; i < SYMBOLS; i++){
-		UM3750::transmit_vals[TRANSITIONS_PER_SYMBOL + (i * TRANSITIONS_PER_SYMBOL)] = 0;
-		UM3750::transmit_vals[TRANSITIONS_PER_SYMBOL + (i * TRANSITIONS_PER_SYMBOL) + 1] = ((code.value >> (SYMBOLS - (i + 1))) & 0x01);
-		UM3750::transmit_vals[TRANSITIONS_PER_SYMBOL + (i * TRANSITIONS_PER_SYMBOL) + 2] = 1;   
+		UM3750::transmit.vals[TRANSITIONS_PER_SYMBOL + (i * TRANSITIONS_PER_SYMBOL)] = 0;
+		UM3750::transmit.vals[TRANSITIONS_PER_SYMBOL + (i * TRANSITIONS_PER_SYMBOL) + 1] = ((code.value >> (SYMBOLS - (i + 1))) & 0x01);
+		UM3750::transmit.vals[TRANSITIONS_PER_SYMBOL + (i * TRANSITIONS_PER_SYMBOL) + 2] = 1;   
 	}
 	
 	timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
@@ -90,8 +81,8 @@ void UM3750::transmitCode(Code code) {
 
 bool UM3750::isTransmitting() {
 	return 
-		UM3750::transmit_total_times && 
-		UM3750::transmit_current_times < UM3750::transmit_total_times;
+		UM3750::transmit.total_times && 
+		UM3750::transmit.current_times < UM3750::transmit.total_times;
 }
 
 // From Arduino/cores/esp8266/core_esp8266_wiring_digital.cpp
@@ -106,13 +97,13 @@ void ICACHE_RAM_ATTR UM3750::__digitalWrite(uint8_t pin, uint8_t val) {
 }
 
 void ICACHE_RAM_ATTR UM3750::UM3750ISRtransmit(void) {
-	UM3750::__digitalWrite(UM3750::transmit_pin, UM3750::transmit_vals[UM3750::transmit_i]);
+	UM3750::__digitalWrite(UM3750::transmit.pin, UM3750::transmit.vals[UM3750::transmit.i]);
 	
-	if(++UM3750::transmit_i == TOTAL_TRANSITIONS){
-		UM3750::transmit_i = 0;
-		UM3750::transmit_current_times++;  
+	if(++UM3750::transmit.i == TOTAL_TRANSITIONS){
+		UM3750::transmit.i = 0;
+		UM3750::transmit.current_times++;  
 	}
 	
-	if(UM3750::transmit_current_times == UM3750::transmit_total_times)
+	if(UM3750::transmit.current_times == UM3750::transmit.total_times)
 		timer1_disable();
 }
