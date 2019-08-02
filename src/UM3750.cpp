@@ -188,7 +188,7 @@ void ICACHE_RAM_ATTR UM3750::UM3750ISRreceive(void) {
       // to see if there is an actual transmission   
       uint8_t durations_i2 = (ISRGVAR(durations_i) - 24) & 0x1F; // beginning of the first symbol
       uint32_t ts = ISRGVAR(durations[durations_i2]) + ISRGVAR(durations[(durations_i2 + 1) & 0x1F]);
-      uint32_t tolerance = ts >> 5; // 1/32 of ts
+      uint32_t tolerance = ts >> 3; // 1/8 of ts
       uint8_t ok = ts > 200;
       uint32_t cur_ts;
 
