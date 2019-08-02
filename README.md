@@ -71,7 +71,7 @@ function `getReceivedCode`, and any new code reception is paused until you call
         UM3750::Code code;
         
         // Wait for a new code to be received
-        while(!um3750.isReceivedCodeAvailable()) yield();
+        while(!myUM3750.isReceivedCodeAvailable()) yield();
         
         code = myUM3750.getReceivedCode();
         
