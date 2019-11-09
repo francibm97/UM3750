@@ -59,33 +59,29 @@ Similarly, before being able to receive a code, you have to choose an input pin.
 After a new code has been successfully decoded, you can read it with the 
 function `getReceivedCode`, and any new code reception is paused until you call
 `resetReceivedCode`.
-    
+      
     UM3750 myUM3750;
-
+    
     void setup() {
-        Serial.begin(9600);
-        myUM3750.enableReceive(D7);
+        Serial.begin(115200);
+        myUM3750.enableReceive(D2);
+        Serial.println();
+        Serial.println("Listening started");
     }
     
     void loop() {
-        UM3750::Code code;
-        
-        // Wait for a new code to be received
-        while(!myUM3750.isReceivedCodeAvailable()) yield();
-        
-        code = myUM3750.getReceivedCode();
-        
-        Serial.print("New code: ");
-        Serial.print(code.value);
-        Serial.print(", Ts = ");
-        Serial.print(code.symbolDurationTime);
+        while(!myUM3750.isReceivedCodeAvailable())
+            yield();
+        Serial.print("Found code: ");
+        Serial.print(myUM3750.getReceivedCode().value);
+        Serial.print(" Ts = ");
+        Serial.print(myUM3750.getReceivedCode().symbolDurationTime);
         Serial.println();
-        
-        um3750.resetReceivedCode();
+        myUM3750.resetReceivedCode();
     }
     
 A maximum of three instances can be listening at the same time.
-To disable code reception for a given instance, you can call `disableTransmit()`.
+To disable code reception for a given instance, you can call `disableReceive()`.
 
 ## Limitations
 
